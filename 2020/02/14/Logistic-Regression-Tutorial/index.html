@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="baidu-site-verification" content="093lY4ziMu" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="description" content="A personal blog">
+    <meta name="keyword"  content="chenlu, blog, homepage">
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <!--<link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>-->
+    <title>
+        
+          Logistic Regression Tutorial - Lu CHEN
+        
+    </title>
+
+    <link rel="canonical" href="https://dusign.net/2020/02/14/Logistic-Regression-Tutorial/">
+
+    <!-- Bootstrap Core CSS -->
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+
+    <!-- Custom CSS --> 
+    
+        
+<link rel="stylesheet" href="/css/dusign-light.css">
+
+        
+<link rel="stylesheet" href="/css/dusign-common-light.css">
+
+        
+<link rel="stylesheet" href="/css/font-awesome.css">
+
+        
+<link rel="stylesheet" href="/css/toc.css">
+
+        <!-- background effects end -->
+    
+    
+    <!-- Pygments Highlight CSS -->
+    
+<link rel="stylesheet" href="/css/highlight.css">
+
+
+    
+<link rel="stylesheet" href="/css/widget.css">
+
+
+    
+<link rel="stylesheet" href="/css/rocket.css">
+
+
+    
+<link rel="stylesheet" href="/css/signature.css">
+
+
+    
+<link rel="stylesheet" href="/css/fonts.googleapis.css">
+
+
+    <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+    <!-- photography -->
+    
+<link rel="stylesheet" href="/css/photography.css">
+
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- background effects start -->
+    
+    <!-- background effects end -->
+
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            
+                background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('')
+                /*post*/
+            
+        
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#machine learning" title="machine learning">machine learning</a>
+                            
+                              <a class="tag" href="/tags/#gradient descent" title="gradient descent">gradient descent</a>
+                            
+                              <a class="tag" href="/tags/#logistic regression" title="logistic regression">logistic regression</a>
+                            
+                              <a class="tag" href="/tags/#classification" title="classification">classification</a>
+                            
+                              <a class="tag" href="/tags/#regularization" title="regularization">regularization</a>
+                            
+                        </div>
+                        <h1>Logistic Regression Tutorial</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by Jack on
+                            2020-02-14
+                        </span>
+
+                        
+                            <div class="blank_box"></div>
+                            <span class="meta">
+                                Words <span class="post-count">2.4k</span> and
+                                Reading Time <span class="post-count">8</span> Minutes
+                            </span>
+                            <div class="blank_box"></div>
+                            <!-- 不蒜子统计 start -->
+                            <span class="meta">
+                                Viewed <span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-spin"></i></span> Times
+                            </span>
+                            <!-- 不蒜子统计 end -->
+                        
+
+                    </div>
+                
+
+                </div>
+            </div>
+        </div>      
+    </div>
+
+    
+    <div class="waveWrapper">
+        <div class="wave wave_before" style="background-image: url('/img/wave-light.png')"></div>
+        <div class="wave wave_after" style="background-image: url('/img/wave-light.png')"></div>
+    </div>
+    
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Road Studio</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/categories/">Categories</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About me</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/photography/">Photography</a>
+                        </li>
+                        
+                    
+
+                    <li>
+                        <a href="https://blog.csdn.net/d_Nail" target="_blank">Chinese Blog</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h1 id="逻辑回归（Logistic-Regression）"><a href="#逻辑回归（Logistic-Regression）" class="headerlink" title="逻辑回归（Logistic Regression）"></a>逻辑回归（Logistic Regression）</h1><p>本文为提纲式笔记，在解决线性回归问题的基础上探讨逻辑回归，主要介绍逻辑回归的机器学习算法与正则化技术。内容包括：逻辑回归问题的简介、相关基础术语解析、梯度下降算法、其他高级优化算法的使用、多分类问题解法、正则化技术简介及其在线性回归与逻辑回归中的应用。</p>
+<blockquote>
+<p>逻辑回归是一种对数几率统计模型，其基本形式是使用Logistic函数（一种常见的S型函数）来对二元因变量建模，并且存在着许多复杂的扩展。逻辑回归常用于解决二分类问题（在解决多分类问题时可以使用softmax方法进行处理），用于估计某个事件的可能性。</p>
+<p>逻辑回归与线性回归的关系：逻辑回归与线性回归都是一种广义线性模型（generalized linear model）。逻辑回归假设因变量 <strong><em>y</em></strong> 服从伯努利分布，而线性回归假设因变量 <strong><em>y</em></strong> 服从高斯分布。 因此与线性回归有很多相同之处，去除Logistic映射函数的话，逻辑回归算法就是一个线性回归。可以说，逻辑回归是以线性回归为理论支持的，但是逻辑回归通过Logistic函数引入了非线性因素，因此可以轻松处理二分类问题。</p>
+</blockquote>
+<h1 id="一-分类问题与逻辑回归"><a href="#一-分类问题与逻辑回归" class="headerlink" title="一. 分类问题与逻辑回归"></a>一. 分类问题与逻辑回归</h1><h2 id="1-1-分类（Classification）"><a href="#1-1-分类（Classification）" class="headerlink" title="1.1 分类（Classification）"></a>1.1 分类（Classification）</h2><ul>
+<li>例子：<ul>
+<li>邮件：垃圾邮件/正常邮件</li>
+<li>线上交易：诈骗/正常</li>
+<li>肿瘤：恶性/良性</li>
+</ul>
+</li>
+<li>分类问题就像回归问题一样，只是我们现在要预测的值只包含少量的离散值。</li>
+<li>典型的<strong>二分类</strong>（binary classification problem）任务：y∈{0，1}<ul>
+<li>y=0时一般表示某种性质的缺失（Negative class）</li>
+<li>y=1时一般表示某种性质的存在（Positive class）</li>
+</ul>
+</li>
+<li>分类任务不能用回归方法解决<ul>
+<li>回归方法：计算出线性回归函数后，映射所有大于0.5的预测作为1，所有小于0.5的预测作为0</li>
+<li>回归方法并不适用，因为分类问题实际上不存在一个能够拟合的线性函数</li>
+</ul>
+</li>
+<li>注意：逻辑回归实际上并非用于回归任务，而是用于分类任务</li>
+</ul>
+<h2 id="1-2-假设函数的表达式（Hypothesis-Representation）"><a href="#1-2-假设函数的表达式（Hypothesis-Representation）" class="headerlink" title="1.2 假设函数的表达式（Hypothesis Representation）"></a>1.2 假设函数的表达式（Hypothesis Representation）</h2><ul>
+<li>需要改变假设函数h(x)的形式以将其输出范围限制在(0, 1)区间内</li>
+<li>做法如下：将theta^T*X放入一个特殊的函数中进行映射  <div align=center><img src="https://raw.githubusercontent.com/Jack-CHEN-sci/Machine-Learning-Andrew/master/notes/img/sigmoid_function.png" width = 20% /></div></li>
+<li>该函数称为<strong>S型函数(Sigmoid Function)</strong> 或<strong>逻辑函数(Logistic Function)</strong>，图像如下：<br>  <div align=center><img src="https://raw.githubusercontent.com/Jack-CHEN-sci/Machine-Learning-Andrew/master/notes/img/sigmoid_function_image.png" width = 80% /></div><h3 id="假设函数表达的意义"><a href="#假设函数表达的意义" class="headerlink" title="假设函数表达的意义"></a>假设函数表达的意义</h3></li>
+<li>h(x)将给出输出值为“1”的<strong>概率</strong><ul>
+<li>例如：若h(x)=0.7，则输出值为“1”（具有某种性质）的概率为70% ，而输出值为“0”（不具有某种性质）的概率为30%</li>
+</ul>
+</li>
+<li>数学表达即为：<br>  <div align=center><img src="https://raw.githubusercontent.com/Jack-CHEN-sci/Machine-Learning-Andrew/master/notes/img/classification_hx_meaning.png" width = 40% /></div><br>  其中，P(y=1|x;θ) 表示在给定假设函数的输入值x及其相关参数值θ后，输出值为1的概率</li>
+</ul>
+<h2 id="1-3-决策边界（Decision-Boundary）"><a href="#1-3-决策边界（Decision-Boundary）" class="headerlink" title="1.3 决策边界（Decision Boundary）"></a>1.3 决策边界（Decision Boundary）</h2><ul>
+<li>为了得到离散的0或1分类，我们可以将假设函数（Sigmoid）的输出转换如下：<ul>
+<li>h(x)≥0.5 -&gt; y=1 即 x≥0 -&gt; y=1</li>
+<li>h(x)<0.5 -> y=0 即 x<0 -> y=0</li>
+</ul>
+</li>
+<li>从图像上来看，假设函数会形成一条决策边界，边界一侧的数据点预测为“1”，另一侧预测为“0”  <div align=center><img src="https://raw.githubusercontent.com/Jack-CHEN-sci/Machine-Learning-Andrew/master/notes/img/decision_boundary_image.png" width = 80% /></div>
+
+</li>
+</ul>
+<h2 id="1-4-代价函数（Cost-Function）"><a href="#1-4-代价函数（Cost-Function）" class="headerlink" title="1.4 代价函数（Cost Function）"></a>1.4 代价函数（Cost Function）</h2><ul>
+<li>线性回归的代价函数在分类问题中并不适用<ul>
+<li>因为 1）分类问题中假设函数h(x)的形式很复杂； 2）我们对每一次预测产生的代价cost(h(x),y)的定义为预测与真实标签值之差的平方，平方之后无疑使得整个代价函数更为复杂<div align=center><img src="https://raw.githubusercontent.com/Jack-CHEN-sci/Machine-Learning-Andrew/master/notes/img/cost_redefine.png" width = 50% /></div></li>
+<li>事实上，若沿用线性回归的“均方误差”代价函数，则会导致代价函数J(θ)“非凸”（non-convex）<div align=center><img src="https://raw.githubusercontent.com/Jack-CHEN-sci/Machine-Learning-Andrew/master/notes/img/convex_vs_nonconvex.png" width = 80% /></div></li>
+</ul>
+</li>
+<li>定义适用于逻辑回归的预测代价<br>  <div align=center><img src="https://raw.githubusercontent.com/Jack-CHEN-sci/Machine-Learning-Andrew/master/notes/img/cost_of_classification.png" width = 65% /></div><ul>
+<li>通过观察图像理解函数意义<ul>
+<li>当实际标签值y=1时：<ul>
+<li>若预测值 h(x) -&gt; 0，则代价 cost -&gt; ∞.（预测失误）</li>
+<li>若预测值 h(x) -&gt; 1，则代价 cost -&gt; 0.（预测正确）</li>
+</ul>
+</li>
+<li>当实际标签值y=0时：<ul>
+<li>若预测值 h(x) -&gt; 0，则代价 cost -&gt; 0.（预测正确）</li>
+<li>若预测值 h(x) -&gt; 1，则代价 cost -&gt; ∞.（预测失误）</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong><em>可以理解为我们对算法的预测失误进行处罚，失误越大，处罚越严厉</em></strong></li>
+</ul>
+</li>
+<li>将新定义的 预测代价（cost）代入 代价函数（cost function）中，就可以保证 J(θ) 是凸函数了</li>
+</ul>
+<h2 id="1-5-简化代价函数"><a href="#1-5-简化代价函数" class="headerlink" title="1.5 简化代价函数"></a>1.5 简化代价函数</h2><ul>
+<li>将代价cost(h(x), y)由两种情况的分段函数写为统一形式:<div align=center><img src="https://raw.githubusercontent.com/Jack-CHEN-sci/Machine-Learning-Andrew/master/notes/img/calssification_cost.png" width = 60% /></div></li>
+<li>将上式代入代价函数J(θ)中，得到完整的代价函数表达式：<div align=center><img src="https://raw.githubusercontent.com/Jack-CHEN-sci/Machine-Learning-Andrew/master/notes/img/calssification_cost_function.png" width = 65% /></div></li>
+<li>在实际应用中，进行向量化之后的表达式为：<div align=center><img src="https://raw.githubusercontent.com/Jack-CHEN-sci/Machine-Learning-Andrew/master/notes/img/vectorized_cost_function.png" width = 55% /></div>
+
+</li>
+</ul>
+<h2 id="1-6-梯度下降"><a href="#1-6-梯度下降" class="headerlink" title="1.6 梯度下降"></a>1.6 梯度下降</h2><ul>
+<li>梯度下降的通式为：<div style="text-indent:5%"><img src="https://raw.githubusercontent.com/Jack-CHEN-sci/Machine-Learning-Andrew/master/notes/img/gradient_descent_general.png" width = 32% /></div></li>
+<li>计算末尾的微分项后得到：<div style="text-indent:5%"><img src="https://raw.githubusercontent.com/Jack-CHEN-sci/Machine-Learning-Andrew/master/notes/img/classification_gradient_descent.png" width = 45% /></div></li>
+<li>向量化后得到：<div align=center><img src="https://raw.githubusercontent.com/Jack-CHEN-sci/Machine-Learning-Andrew/master/notes/img/vectorized_classification_gradient_descent.png" width =40% /></div>
+
+</li>
+</ul>
+<h2 id="1-7-高级优化算法"><a href="#1-7-高级优化算法" class="headerlink" title="1.7 高级优化算法"></a>1.7 高级优化算法</h2><ul>
+<li>优化算法：<ul>
+<li>给定代价函数J(θ)，欲求使得J(θ)最小的参数θ</li>
+<li>算法执行过程中，对于当前的θ，需要计算:<ol>
+<li>J(θ)的函数值</li>
+<li>J(θ)对各个θ_j (j = 0,1,…,n)的导数值</li>
+</ol>
+</li>
+<li>在Octave/MATLAB中：可在编程实现计算以上两者后传参至函数fminunc，fmincg等函数接口中调用高级优化算法</li>
+<li>优化算法举例：<ul>
+<li>梯度下降</li>
+<li>Conjugate Gradient</li>
+<li>BFGS</li>
+<li>L-BFGS</li>
+</ul>
+</li>
+<li>高级优化算法不需要手动调试学习率α，并且通常执行较快；但是算法过程很复杂</li>
+</ul>
+</li>
+</ul>
+<h2 id="1-8-多分类任务：一对多算法（Multiclass-Classification-One-vs-all）"><a href="#1-8-多分类任务：一对多算法（Multiclass-Classification-One-vs-all）" class="headerlink" title="1.8 多分类任务：一对多算法（Multiclass Classification: One-vs-all）"></a>1.8 多分类任务：一对多算法（Multiclass Classification: One-vs-all）</h2><ul>
+<li>举例：<ul>
+<li>邮件标签：工作，朋友，家庭，爱好，…</li>
+<li>医疗诊断：无病，感冒，流感，…</li>
+<li>天气：阴，晴，雨，雪，…</li>
+<li>需要将预测类别从 y∈{0, 1} 二类拓展到 y∈{0, 1, … , n} 多类</li>
+</ul>
+</li>
+<li>假设函数的意义：某数据点属于该类的概率，如果将多分类任务划分为n个二分类任务，那么得到的n个假设函数分别就代表某数据点属于某一类的概率，取这n个概率值中最大的一个为该数据点的预测结果</li>
+<li>一对多算法：<ul>
+<li>以三类为例：<div align=center><img src="https://raw.githubusercontent.com/Jack-CHEN-sci/Machine-Learning-Andrew/master/notes/img/one_vs_all.png" width = 100% /></div></li>
+<li>数学表达：<div align=center><img src="https://raw.githubusercontent.com/Jack-CHEN-sci/Machine-Learning-Andrew/master/notes/img/multiclass_classification.png" width = 40% /></div>
+
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="二-正则化（Regularization）"><a href="#二-正则化（Regularization）" class="headerlink" title="二. 正则化（Regularization）"></a>二. 正则化（Regularization）</h1><h2 id="2-1-过拟合（Overfit）"><a href="#2-1-过拟合（Overfit）" class="headerlink" title="2.1 过拟合（Overfit）"></a>2.1 过拟合（Overfit）</h2><div align=center><img src="https://raw.githubusercontent.com/Jack-CHEN-sci/Machine-Learning-Andrew/master/notes/img/overfit_vs_underfit.png" width = 90% /></div>
+
+<ul>
+<li><strong>欠拟合</strong>：算法具有“<strong>高偏差 (High bias)</strong>” —— 假设函数h(x)没有较好地拟合数据，该函数的与数据的趋势很不匹配,它通常是由于函数太简单或使用的特征（变量）太少造成的。</li>
+<li><strong>过拟合</strong>：算法具有“ <strong>高方差 (High variance)</strong> ” —— 假设函数h(x)对数据过度拟合，该函数虽然适合现有数据，但不能很好地 <strong>泛化</strong> 以预测新数据，它通常是由于函数太复杂造成的，会产生许多与数据无关的不必要的曲线和角度。</li>
+<li>解决过拟合问题有两个主要选项：<ol>
+<li>减少特征（变量）的数量<ul>
+<li>手动选择保留哪些特征</li>
+<li>使用某种模型选择算法</li>
+</ul>
+</li>
+<li>正则化<ul>
+<li>保留所有特征，但减少参数θ的大小</li>
+<li>当我们有很多具有微小作用的特征时，正则化将表现非常好</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul>
+<h2 id="2-2-代价函数"><a href="#2-2-代价函数" class="headerlink" title="2.2 代价函数"></a>2.2 代价函数</h2><ul>
+<li>如果假设函数h(x)过拟合，我们可以通过增加代价函数来减少函数中某些变量（特征）的权重</li>
+<li>举个例子：我们想使一个四次函数（如下）形状更趋近于二次函数<br>  <div align=center><img src="https://raw.githubusercontent.com/Jack-CHEN-sci/Machine-Learning-Andrew/master/notes/img/quartic_function.png" width = 45% /></div><ul>
+<li>那么我们想尽可能地弱化 x^3 和 x^4 的影响，在不去除这些特征，也不改变假设函数形式的前提下，我们可以修改代价函数:<div align=center><img src="https://raw.githubusercontent.com/Jack-CHEN-sci/Machine-Learning-Andrew/master/notes/img/regularized_cost_function_example.png" width = 70% /></div></li>
+<li>通过在代价函数中加上 θ_3 和 θ_4 相关且对代价函数值影响非常大的项，在降低代价的过程中，我们就必须缩小 θ_3 和 θ_4 ，即将 x^3 和 x^4 的权重降低</li>
+</ul>
+</li>
+<li>通常情况下，我们不知道哪几个特征是需要被降权的，所以，我们可以在一个简单的求和中正则化所有的参数:<br>  <div align=center><img src="https://raw.githubusercontent.com/Jack-CHEN-sci/Machine-Learning-Andrew/master/notes/img/regularized_cost_function.png" width = 60% /></div><ul>
+<li>其中，λ 是正则化参数，它决定了参数的代价扩大了多少</li>
+</ul>
+</li>
+<li>利用上述带有额外一求和项的代价函数，我们可以使假设函数的形式更加平滑以减少过拟合</li>
+<li>注意：如果 λ 太大，它可能会使函数过于平滑并导致欠拟合。</li>
+</ul>
+<h2 id="2-3-正则化的线性回归"><a href="#2-3-正则化的线性回归" class="headerlink" title="2.3 正则化的线性回归"></a>2.3 正则化的线性回归</h2><ul>
+<li>代价函数  <div align=center><img src="https://raw.githubusercontent.com/Jack-CHEN-sci/Machine-Learning-Andrew/master/notes/img/regularized_cost_function.png" width = 60% /></div></li>
+<li>梯度下降<br>  <div align=center><img src="https://raw.githubusercontent.com/Jack-CHEN-sci/Machine-Learning-Andrew/master/notes/img/regularized_linearReg_GD.png" width = 90% /></div><ul>
+<li>这里将 θ_0 与其他参数 θ_j (j = 1, 2, … , n) 分开处理，我们将 θ_j 的式子变形如下：<div align=center><img src="https://raw.githubusercontent.com/Jack-CHEN-sci/Machine-Learning-Andrew/master/notes/img/regularized_linearReg_GD_transform.png" width = 65% /></div></li>
+<li>上式中等号右边第一项一般都是小于1的，这就起到了在每次迭代中缩小 θ_j 的作用。注意，此时等号右边第二项与正则化之前一样</li>
+</ul>
+</li>
+<li>标准方程<br>  <div align=center><img src="https://raw.githubusercontent.com/Jack-CHEN-sci/Machine-Learning-Andrew/master/notes/img/regularized_linearReg_NE.png" width = 45% /></div><br>  方程的大致形式与原来的方程是一样的，只不过在括号里增加了另一项<br>  注意：当 m&lt;n 时，(X^T)X 是不可逆的；但是当我们加入 λL 后，(X^T)X+λL 就是可逆的了</li>
+</ul>
+<h2 id="2-4-正则化的逻辑回归"><a href="#2-4-正则化的逻辑回归" class="headerlink" title="2.4 正则化的逻辑回归"></a>2.4 正则化的逻辑回归</h2><ul>
+<li>代价函数  <div align=center><img src="https://raw.githubusercontent.com/Jack-CHEN-sci/Machine-Learning-Andrew/master/notes/img/regularized_logisticReg_costFunction.png" width = 95% /></div></li>
+<li>梯度下降<ul>
+<li>梯度下降过程与线性回归是一致的，只是式中假设函数 h(x) 不同<div align=center><img src="https://raw.githubusercontent.com/Jack-CHEN-sci/Machine-Learning-Andrew/master/notes/img/regularized_linearReg_GD.png" width = 90% /></div></li>
+</ul>
+</li>
+</ul>
+
+                
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                    
+                    <li class="next">
+                        <a href="/2020/02/07/Linear-Regression-Tutorial/" data-toggle="tooltip" data-placement="top" title="Linear Regression Tutorial">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                <!-- tip start -->
+                
+
+                
+                <div class="comment_notes">
+                    <p>
+                        This is copyright.
+                    </p>
+                </div>
+                
+                <!-- tip end -->
+
+                <!-- Music start-->
+                
+                <!-- Music end -->
+
+                <!-- Sharing -->
+                
+                <div class="social-share"  data-wechat-qrcode-helper="" align="center"></div>
+                <!--  css & js -->
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/css/share.min.css">
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script>
+                
+                <!-- Sharing -->
+
+                <!-- gitment start -->
+                
+                <!-- gitment end -->
+
+                <!-- 来必力City版安装代码 -->
+                
+                <!-- City版安装代码已完成 -->
+
+                <!-- disqus comment start -->
+                
+                <!-- disqus comment end -->
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#machine learning" title="machine learning">machine learning</a>
+                        
+                          <a class="tag" href="/tags/#gradient descent" title="gradient descent">gradient descent</a>
+                        
+                          <a class="tag" href="/tags/#logistic regression" title="logistic regression">logistic regression</a>
+                        
+                          <a class="tag" href="/tags/#classification" title="classification">classification</a>
+                        
+                          <a class="tag" href="/tags/#regularization" title="regularization">regularization</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://www.sdu.edu.cn/" target="_blank">SDU</a></li>
+                    
+                        <li><a href="https://www.tsxt.sdu.edu.cn/" target="_blank">Taishan College</a></li>
+                    
+                        <li><a href="https://vislab.wang/" target="_blank">VisLab</a></li>
+                    
+                        <li><a href="https://idl.cs.washington.edu/" target="_blank">UW IDL</a></li>
+                    
+                        <li><a href="#" target="_blank">Other</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+
+
+<style  type="text/css">
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/Jack-CHEN-sci">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Jack 2020 
+                    <br>
+                    Powered by 
+                    <a href="https://github.com/dusign/hexo-theme-snail" target="_blank" rel="noopener">
+                        <i>hexo-theme-snail</i>
+                    </a> | 
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0"
+                        width="100px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=dusign&repo=hexo-theme-snail&type=star&count=true">
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+
+</footer>
+
+<!-- jQuery -->
+
+<script src="/js/jquery.min.js"></script>
+
+
+<!-- Bootstrap Core JavaScript -->
+
+<script src="/js/bootstrap.min.js"></script>
+
+
+<!-- Custom Theme JavaScript -->
+
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- Search -->
+
+<script src="/js/search.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("https://dusign.net/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-XXXXXXXX-X';
+    var _gaDomain = 'yoursite';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+<!-- Search -->
+
+    <script type="text/javascript">      
+        var search_path = "search.xml";
+        if (search_path.length == 0) {
+            search_path = "search.xml";
+        }
+    var path = "/" + search_path;
+    searchFunc(path, 'local-search-input', 'local-search-result');
+    </script>
+
+
+<!-- busuanzi -->
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+
+    
+        <!-- background effects line -->
+        
+
+        
+
+        <!-- background effects end -->
+    
+
+    <!--<script size="50" alpha='0.3' zIndex="-999" src="/js/ribbonStatic.js"></script>-->
+    
+        <script src="/js/ribbonDynamic.js"></script>
+    
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</body>
+
+</html>
