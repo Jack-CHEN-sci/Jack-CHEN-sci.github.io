@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="baidu-site-verification" content="093lY4ziMu" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="description" content="A personal blog">
+    <meta name="keyword"  content="chenlu, blog, homepage">
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <!--<link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>-->
+    <title>
+        
+          An Elaborate Introduction to t-SNE and its Application - Lu CHEN
+        
+    </title>
+
+    <link rel="canonical" href="https://dusign.net/2020/04/25/An-Elaborate-Introduction-to-t-SNE-and-its-Application/">
+
+    <!-- Bootstrap Core CSS -->
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+
+    <!-- Custom CSS --> 
+    
+        
+<link rel="stylesheet" href="/css/dusign-light.css">
+
+        
+<link rel="stylesheet" href="/css/dusign-common-light.css">
+
+        
+<link rel="stylesheet" href="/css/font-awesome.css">
+
+        
+<link rel="stylesheet" href="/css/toc.css">
+
+        <!-- background effects end -->
+    
+    
+    <!-- Pygments Highlight CSS -->
+    
+<link rel="stylesheet" href="/css/highlight.css">
+
+
+    
+<link rel="stylesheet" href="/css/widget.css">
+
+
+    
+<link rel="stylesheet" href="/css/rocket.css">
+
+
+    
+<link rel="stylesheet" href="/css/signature.css">
+
+
+    
+<link rel="stylesheet" href="/css/fonts.googleapis.css">
+
+
+    <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+    <!-- photography -->
+    
+<link rel="stylesheet" href="/css/photography.css">
+
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- background effects start -->
+    
+    <!-- background effects end -->
+
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            
+                background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('')
+                /*post*/
+            
+        
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#t-SNE" title="t-SNE">t-SNE</a>
+                            
+                              <a class="tag" href="/tags/#dimensionality reduction" title="dimensionality reduction">dimensionality reduction</a>
+                            
+                              <a class="tag" href="/tags/#projection &amp; embedding" title="projection &amp; embedding">projection &amp; embedding</a>
+                            
+                              <a class="tag" href="/tags/#manifold learning" title="manifold learning">manifold learning</a>
+                            
+                              <a class="tag" href="/tags/#visualization" title="visualization">visualization</a>
+                            
+                        </div>
+                        <h1>An Elaborate Introduction to t-SNE and its Application</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by Jack on
+                            2020-04-25
+                        </span>
+
+                        
+                            <div class="blank_box"></div>
+                            <span class="meta">
+                                Words <span class="post-count">2.8k</span> and
+                                Reading Time <span class="post-count">9</span> Minutes
+                            </span>
+                            <div class="blank_box"></div>
+                            <!-- 不蒜子统计 start -->
+                            <span class="meta">
+                                Viewed <span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-spin"></i></span> Times
+                            </span>
+                            <!-- 不蒜子统计 end -->
+                        
+
+                    </div>
+                
+
+                </div>
+            </div>
+        </div>      
+    </div>
+
+    
+    <div class="waveWrapper">
+        <div class="wave wave_before" style="background-image: url('/img/wave-light.png')"></div>
+        <div class="wave wave_after" style="background-image: url('/img/wave-light.png')"></div>
+    </div>
+    
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Road Studio</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/categories/">Categories</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About me</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/photography/">Photography</a>
+                        </li>
+                        
+                    
+
+                    <li>
+                        <a href="https://blog.csdn.net/d_Nail" target="_blank">Chinese Blog</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h1 id="t-SNE-算法详解及应用"><a href="#t-SNE-算法详解及应用" class="headerlink" title="t-SNE 算法详解及应用"></a>t-SNE 算法详解及应用</h1><h2 id="降维"><a href="#降维" class="headerlink" title="降维"></a>降维</h2><h2 id="基本算法：SNE"><a href="#基本算法：SNE" class="headerlink" title="基本算法：SNE"></a>基本算法：SNE</h2><h3 id="主要思想"><a href="#主要思想" class="headerlink" title="主要思想"></a>主要思想</h3><p>在降维过程中保持数据点在原空间中的近邻关系，即高维空间中距离较小的两点投影到低维空间中的距离也应较小，而原空间中距离较大的两点在投影空间中的距离也应较大，从而在低维空间中拟合数据的大致分布结构（特别是聚类结构）。</p>
+<p>直观地理解，两数据点距离越近，也就是该数据点在许多维度上的取值差异越小，说明它们所代表的对象之间的相似度越高。SNE就是将两点间的<strong>欧式距离</strong>转化为一个代表<strong>相似度</strong>的条件概率值，在高维和低维空间中分别进行度量，其中低维空间中最初数据点的位置是随机初始化的，得到两个分布：</p>
+<ul>
+<li>分布1：对输入对象（即原高维数据集中的全体数据点）两两之间的相似度的度量</li>
+<li>分布2：对输出对象（即投影到低维空间中的全体数据点）两两之间相似度的度量</li>
+</ul>
+<p>进而采用“优化”的方法，以<strong>最小化两个分布的差异</strong>为目标，不断迭代。</p>
+<h3 id="算法过程"><a href="#算法过程" class="headerlink" title="算法过程"></a>算法过程</h3><h4 id="度量高维空间中数据点间相似度"><a href="#度量高维空间中数据点间相似度" class="headerlink" title="度量高维空间中数据点间相似度"></a>度量高维空间中数据点间相似度</h4><p>那么如何将数据点间的“距离”在近邻意义下转换为“相似度”呢？怎样使远距离对应低相似度，近距离对应高相似度呢？SNE借用了正态分布的概念来解决这一问题。正态分布是自然界普遍存在的一种概率分布，如果一个事物受到多个变量的影响，不管每个变量本身符合什么分布，它们叠加后，结果的平均值就是正态分布。</p>
+<blockquote>
+<p>正态分布的奇妙之处，就是许多看似随机的事件竟然服从一个公式就能表达的分布，如同上帝之手特意为之一般。</p>
+</blockquote>
+<p><img src="./2020-04-25-An-Elaborate-Introduction-to-t-SNE-and-its-Application/pic/gaussian_distribution.png" alt="图1"></p>
+<p>显然，大型高维数据集在空间中的分布大多可以看作是正态分布，准确地说，任取一个数据点作为“中心”，其他全体数据点到该点的距离应满足正态分布。而正态分布的概率密度恰好符合“到中心点（平均值）的距离越近，概率密度越大”的直觉，SNE就是以正态分布的密度函数为原型，逐步完成对两点间“相似度”的定义。</p>
+<p>正态分布密度函数（其中，$\mu$为正态分布的期望，$\sigma$为正态分布的标准差）：</p>
+<script type="math/tex; mode=display">
+f(x)=\frac{1}{\sqrt{2 \pi} \sigma} \exp \left(-\frac{(x-\mu)^{2}}{2 \sigma^{2}}\right)</script><p>首先，对 $(x-\mu)^{2}/2 \sigma^{2}$ 这一项进行改造，原 $(x-\mu)^{2}$ 表示数据值到期望值的距离平方，按照我们的建模意义改造为 $|x<em>{j}-x</em>{i}|^{2}$，表示任意一点$x_j$到选定的中心点$x_i$的距离平方。相应地，原标准差$\sigma$应改造为以$x_i$为中心的数据点间距离的正态分布的标准差$\sigma_i$（这一项的计算会在下文中详细说明）。得到以下公式：</p>
+<script type="math/tex; mode=display">d_{j|i}^{2}=\frac{\|x_{j}-x_{i}\|^{2}}{2\sigma_{i}^{2}}</script><p>根据其意义，可以理解为任意两点之间的“不相似度”。显然，两点之间的距离越远，不相似度就越高。</p>
+<p>这里我们先对标准差$\sigma_i$有一个大致的理解，其详细的计算过程将在后文讨论。对于数据集中的每一个点，以其为中心的正态分布应该是不同的，因为数据密度在不同位置上是不同的：</p>
+<ul>
+<li>若中心点位于较密集区域（即中心点所在簇内数据点间距较小），为了区别其他簇内数据点，使它们的相似度与中心点所在簇内数据点的相似度产生较大差距，正态分布的标准差$\sigma_i$应当较小，使其密度曲线较“窄”较“高”（如图上半部分）。</li>
+<li>若中心点位于较稀疏区域（即中心点所在簇内数据点间距较大），为了保证如此大间距的簇内数据点仍能共同享有较高的相似度，正态分布的标准差$\sigma_i$应当较大，使其密度曲线较“宽”较“矮”（如图下半部分）。</li>
+</ul>
+<p><img src="./2020-04-25-An-Elaborate-Introduction-to-t-SNE-and-its-Application/pic/dense_vs_sparse.png" alt="图2"></p>
+<p>也就是说计算两点相似度公式中的$\sigma_i$应当视取中心点的不同而不同，若中心点取在数据密度较大的位置处，那么$\sigma_i$应当较小，而若中心点取在数据密度较小的位置处，那么$\sigma_i$应当较大。也正因此，确定不同中心点的$\sigma_i$十分重要，计算方法需要仔细思量。</p>
+<p>接下来，我们回到对任意两点间“相似度”的定义式的设计中。我们改造了原正态分布密度函数中最关键的一部分，并视其为对“不相似度”的度量，那么将改造完成的“不相似度”代入原正态分布密度函数替换原项，得到如下公式，就可以得到我们所期望的“相似度”的定义了吗？</p>
+<script type="math/tex; mode=display">
+s_{j|i}=\frac{1}{\sqrt{2 \pi} \sigma_i} \exp \left(-\frac{\|x_{j}-x_{i}\|^{2}}{2\sigma_{i}^{2}}\right)</script><p>仔细分析，掐指一算，事情并没有那么简单。两个重要问题浮出水面：</p>
+<ol>
+<li>在计算数据集中任意两点间相似度时，选择哪一个点作为中心点呢？根据我们上文中对$\sigma_i$意义的分析，单纯考虑正态分布的话，似乎选择任何点作为中心点都会更倾向于只是将中心点所在簇与其他簇中的点分开。实际上，采用上式计算得到的结果，是<strong>数据集中任意点与中心点之间的相似度</strong>，中心点所在簇中点的相似度会普遍较高，而其他簇中点的相似度普遍较低。也就是说，仅选取一个中心点用上式计算相似度只会从若干个簇中有效分出一簇（即中心点所在簇），其他簇中点因为相似度相近，仍然混在一起，无法有效区分。</li>
+<li>观察不同标准差的正态分布密度函数图像，不难发现，函数最值的差异会导致密集簇和稀疏簇中两点间的相似度差异。以下图为例：蓝色密集簇中点的相似度可达0.3, 0.35；而橙色稀疏簇中点的相似度只有0.12, 0.15。而这并不是我们所希望发生的情况，因为这样将使得划分簇时没有统一的标准。依然以下图为例：若指定两点间相似度大于0.2的点划归为一簇，那么橙色稀疏簇将无法被划为一簇，相反会被拆解并入其他若干相邻簇中；若指定两点间相似度大于0.1的点划归为一簇，那么蓝色密集簇中将被划入其他簇中的点。理想的结果应该是尽管不同密度的簇选取的标准差$\sigma_i$不同，但一簇内点的相似度应该基本相等。<br><img src="./2020-04-25-An-Elaborate-Introduction-to-t-SNE-and-its-Application/pic/need_of_scaling.png" alt=""></li>
+</ol>
+<p>如何解决这两个问题呢？既然选取一个中心点计算与其他点间相似度，结果为该中心点所在簇中各点的相似度明显高于其他点，也就是能够有效分出该中心点所在的一个簇；那么，我们就可以将数据集中所有点轮流作为中心点,这样一来，每选取一个中心点进行计算便可分出其所在的某个簇，当遍历完数据集中全体数据点后综合分析，就能得到完整的分簇情况。<br>而第二个问题的解决方案在机器学习领域已经相当成熟，称为“<strong>归一化（Normalization）</strong>”，是特征缩放（Feature Scaling）的方法之一。归一化适合对多个实例进行综合对比评价，它将各实例的各项指标的数值分别除以其总和，得到各实例的各项指标的比例水平，从而避免各项指标的具体数值大小对实例间比较的影响，使得不同量纲的的数据具备可比性。现实世界中有不少运用“归一化”的例子，比如在对比不同国家的经济结构或人口结构时，三大产业的具体产值或农村与城市人口的具体数量是不具有可比性的，因为不同国家的经济总量和人口总数是不同的，科学的对比方法应当是计算各产业占国民经济的比重，农村与城市人口占全国总人口的比例。</p>
+<p>综上所述，我们采取<strong>轮流选取所有点作为中心点，分别计算其余点与中心点的（未缩放）相似度，并进行归一化</strong>的策略（用如下公式表达），算得缩放后的点间相似度$p_{j|i}$，以此度量数据在空间中的分布特点。</p>
+<script type="math/tex; mode=display">
+p_{j|i}=\frac{\exp(-\|x_{i}-x_{j}\|^{2}/2\sigma_{i}^{2})}{\sum_{k \ne i}\exp(-\|x_{i}-x_{k}\|^{2}/2\sigma_{i}^{2})}</script><p>$p<em>{j|i}$可以理解为：$x_i$选$x_j$为邻居的可能性。需要明确：邻居是根据以点$x_i$为中心的正态分布的概率密度，按比例选取的。（在以点$x_i$为中心的正态分布下，距离$x_i$越近的点，概率密度越大，被选择为邻居的可能性就越高。）由于我们只关心两点之间的相似度，且从模型意义上讲，一个点选择自己做自己的近邻这一行为并无道理，所以定义$p</em>{i|i}=0$.</p>
+<p><img src="./2020-04-25-An-Elaborate-Introduction-to-t-SNE-and-its-Application/pic/similarity_matrix.png" alt=""></p>
+<blockquote>
+<p>随机变量x的熵是对随机变量不确定性的度量，是对所有可能发生的事件产生的信息量的期望。<br>随机变量的取值个数越多，状态数也就越多，信息熵就越大，混乱程度就越大。当随机分布为均匀分布时，熵最大。</p>
+</blockquote>
+<p>每一个$\sigma_i$都会对应一个分布$P_i$，$\sigma_i$越大，该分布的熵就越大。SNE在用户选定参数$perplexity$（混乱度）的基础上，使用二分搜索算法寻找$\sigma_i$。</p>
+<h4 id="度量低维空间中数据点间相似度"><a href="#度量低维空间中数据点间相似度" class="headerlink" title="度量低维空间中数据点间相似度"></a>度量低维空间中数据点间相似度</h4><p>对于数据集中的点在低维空间中的投影，</p>
+<h4 id="在低维空间中拟合高维数据分布"><a href="#在低维空间中拟合高维数据分布" class="headerlink" title="在低维空间中拟合高维数据分布"></a>在低维空间中拟合高维数据分布</h4><h2 id="对SNE的改进：t-SNE"><a href="#对SNE的改进：t-SNE" class="headerlink" title="对SNE的改进：t-SNE"></a>对SNE的改进：t-SNE</h2><h3 id="对称化"><a href="#对称化" class="headerlink" title="对称化"></a>对称化</h3><h3 id="拥挤问题"><a href="#拥挤问题" class="headerlink" title="拥挤问题"></a>拥挤问题</h3><h3 id=""><a href="#" class="headerlink" title=" "></a> </h3><h4 id="t-分布"><a href="#t-分布" class="headerlink" title="t-分布"></a>t-分布</h4><h4 id="t-SNE"><a href="#t-SNE" class="headerlink" title="t-SNE"></a>t-SNE</h4><h2 id="随机近邻嵌入的特点"><a href="#随机近邻嵌入的特点" class="headerlink" title="随机近邻嵌入的特点"></a>随机近邻嵌入的特点</h2><h4 id="非线性"><a href="#非线性" class="headerlink" title="非线性"></a>非线性</h4><h4 id="无监督"><a href="#无监督" class="headerlink" title="无监督"></a>无监督</h4><h4 id="随机性"><a href="#随机性" class="headerlink" title="随机性"></a>随机性</h4><h2 id="算法改进：应用树结构提升效率"><a href="#算法改进：应用树结构提升效率" class="headerlink" title="算法改进：应用树结构提升效率"></a>算法改进：应用树结构提升效率</h2><h2 id="算法应用"><a href="#算法应用" class="headerlink" title="算法应用"></a>算法应用</h2><h3 id="大型高维数据集的可视化"><a href="#大型高维数据集的可视化" class="headerlink" title="大型高维数据集的可视化"></a>大型高维数据集的可视化</h3><h3 id="机器学习过程解释"><a href="#机器学习过程解释" class="headerlink" title="机器学习过程解释"></a>机器学习过程解释</h3>
+                
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                    
+                    <li class="next">
+                        <a href="/2020/03/19/Estimating-Graphlet-Statistics-via-Random-Walk/" data-toggle="tooltip" data-placement="top" title="Estimating Graphlet Statistics via Random Walk">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                <!-- tip start -->
+                
+
+                
+                <div class="comment_notes">
+                    <p>
+                        This is copyright.
+                    </p>
+                </div>
+                
+                <!-- tip end -->
+
+                <!-- Music start-->
+                
+                <!-- Music end -->
+
+                <!-- Sharing -->
+                
+                <div class="social-share"  data-wechat-qrcode-helper="" align="center"></div>
+                <!--  css & js -->
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/css/share.min.css">
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script>
+                
+                <!-- Sharing -->
+
+                <!-- gitment start -->
+                
+                <!-- gitment end -->
+
+                <!-- 来必力City版安装代码 -->
+                
+                <!-- City版安装代码已完成 -->
+
+                <!-- disqus comment start -->
+                
+                <!-- disqus comment end -->
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#t-SNE" title="t-SNE">t-SNE</a>
+                        
+                          <a class="tag" href="/tags/#dimensionality reduction" title="dimensionality reduction">dimensionality reduction</a>
+                        
+                          <a class="tag" href="/tags/#projection &amp; embedding" title="projection &amp; embedding">projection &amp; embedding</a>
+                        
+                          <a class="tag" href="/tags/#manifold learning" title="manifold learning">manifold learning</a>
+                        
+                          <a class="tag" href="/tags/#visualization" title="visualization">visualization</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://www.sdu.edu.cn/" target="_blank">SDU</a></li>
+                    
+                        <li><a href="https://www.tsxt.sdu.edu.cn/" target="_blank">Taishan College</a></li>
+                    
+                        <li><a href="https://vislab.wang/" target="_blank">VisLab</a></li>
+                    
+                        <li><a href="https://idl.cs.washington.edu/" target="_blank">UW IDL</a></li>
+                    
+                        <li><a href="#" target="_blank">Other</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+
+
+<style  type="text/css">
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/Jack-CHEN-sci">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Jack 2020 
+                    <br>
+                    Powered by 
+                    <a href="https://github.com/dusign/hexo-theme-snail" target="_blank" rel="noopener">
+                        <i>hexo-theme-snail</i>
+                    </a> | 
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0"
+                        width="100px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=dusign&repo=hexo-theme-snail&type=star&count=true">
+                    </iframe>
+                    <br>
+                    <img src="https://static.dy208.cn/o_1dfilp8ruo521thr1hvf18ji17soa.png">
+                    <a href="http://www.beian.miit.gov.cn/"  style="color:#f72b07" target="_blank">鲁ICP备19044742号-1</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+</footer>
+
+<!-- jQuery -->
+
+<script src="/js/jquery.min.js"></script>
+
+
+<!-- Bootstrap Core JavaScript -->
+
+<script src="/js/bootstrap.min.js"></script>
+
+
+<!-- Custom Theme JavaScript -->
+
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- Search -->
+
+<script src="/js/search.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("https://dusign.net/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-XXXXXXXX-X';
+    var _gaDomain = 'yoursite';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+<!-- Search -->
+
+    <script type="text/javascript">      
+        var search_path = "search.xml";
+        if (search_path.length == 0) {
+            search_path = "search.xml";
+        }
+    var path = "/" + search_path;
+    searchFunc(path, 'local-search-input', 'local-search-result');
+    </script>
+
+
+<!-- busuanzi -->
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+
+    
+        <!-- background effects line -->
+        
+
+        
+
+        <!-- background effects end -->
+    
+
+    <!--<script size="50" alpha='0.3' zIndex="-999" src="/js/ribbonStatic.js"></script>-->
+    
+        <script src="/js/ribbonDynamic.js"></script>
+    
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</body>
+
+</html>
