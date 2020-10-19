@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://dusign.net/about/index.html</loc>
+    
+    <lastmod>2020-10-19T06:28:54.599Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://dusign.net/2020/06/08/Answering-Questions-about-Charts-and-Generating-Visual-Explanations/</loc>
     
     <lastmod>2020-06-08T07:57:59.489Z</lastmod>
@@ -26,13 +33,6 @@
     <loc>https://dusign.net/2020/02/18/Neural-Network-Tutorial/</loc>
     
     <lastmod>2020-02-18T14:34:37.495Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://dusign.net/about/index.html</loc>
-    
-    <lastmod>2020-02-18T14:34:34.351Z</lastmod>
     
   </url>
   

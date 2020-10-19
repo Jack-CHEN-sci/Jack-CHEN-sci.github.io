@@ -126,11 +126,11 @@
             
             <tag> machine learning </tag>
             
-            <tag> gradient descent </tag>
-            
             <tag> logistic regression </tag>
             
             <tag> classification </tag>
+            
+            <tag> gradient descent </tag>
             
             <tag> regularization </tag>
             
@@ -159,9 +159,9 @@
             
             <tag> machine learning </tag>
             
-            <tag> linear regression </tag>
-            
             <tag> gradient descent </tag>
+            
+            <tag> linear regression </tag>
             
             <tag> normal equation </tag>
             
